@@ -3,21 +3,21 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
-#include "searchtest.h"
-#include "Chatbot.h"
+#include "backend.h"
+#include "chatbot.h"
 
 
 char user[20];
 char pass[20];
 
-void encrypt(char *password, int key) {
+void encrypt(char *password, int key) {//Encrypting the passwords 
     int i;
     for (i = 0; i < strlen(password); ++i) {
         password[i] = password[i] - key;
     }
 }
 
-void decrypt(char password[],int key)
+void decrypt(char password[],int key)//decrypting the passwords
 {
     unsigned int i;
     for(i=0;i<strlen(password);++i)
@@ -26,7 +26,7 @@ void decrypt(char password[],int key)
     }
 }
 
-int username_exists(FILE *file, const char *username) {
+int username_exists(FILE *file, const char *username) {//checking if the username already exists in the file
     USER temp;
     rewind(file);
     while (fread(&temp, sizeof(USER), 1, file)) {
@@ -37,7 +37,7 @@ int username_exists(FILE *file, const char *username) {
     return 0; // Username is unique
 }
 
-void regis() {
+void regis() {//registering a new student user into the file
     FILE *file = fopen("userpass1.txt", "a+b");
     if (file == NULL) {
         printf("Error opening file!\n");
@@ -62,7 +62,7 @@ void regis() {
     printf("Enter a password: ");
     scanf("%s", new_user.password);
 
-    // Encrypt the password with a simple encryption method
+    // encrypt the password 
     encrypt(new_user.password, 0xFACA);
 
     // Append the new user record to the file
@@ -71,7 +71,7 @@ void regis() {
 
     fclose(file);
 
-    // Create a new file with the username as the file name
+    // create a new file with the username as the file name
     char filename[256];
     sprintf(filename, "%s.txt", new_user.username);
 
@@ -116,22 +116,22 @@ void adminsignin(){
         fflush(stdin);
         printf("\nIf the field is not known in any of the following entries, enter '-' instead.\n");
         printf("Enter Title: ");
-        fgets(p, sizeof(p), stdin);
-        p[strcspn(p, "\n")] = 0;  // Remove newline character
+        fgets(p, sizeof(p), stdin); //this method is used to avoid scanf ending the string at the first whitespace
+        p[strcspn(p, "\n")] = 0;  // ending string read at newline character
         q = strdup(p);
 
         printf("Enter Author: ");
-        fgets(c, sizeof(c), stdin);
+        fgets(c, sizeof(c), stdin); //this method is used to avoid scanf ending the string at the first whitespace
         c[strcspn(c, "\n")] = 0;
         a = strdup(c);
 
         printf("Enter ID: ");
-        fgets(d, sizeof(d), stdin);
+        fgets(d, sizeof(d), stdin); //this method is used to avoid scanf ending the string at the first whitespace
         d[strcspn(d, "\n")] = 0;
         b = strdup(d);
 
         for (int i=0; i < strlen(p); ++i) {
-            q[i] = tolower(p[i]);
+            q[i] = tolower(p[i]);//converting input to lowercase
         }
         for (int i=0; i < strlen(c); ++i) {
             a[i] = tolower(c[i]);
@@ -147,7 +147,7 @@ void adminsignin(){
         
         printf("\n");
         char *emp="  -  ";
-        if (strstr(emp,q)!=NULL){
+        if (strstr(emp,q)!=NULL){//if user doesn't know the field, it is set to NULL
             strcpy(q,"");
         }
         if (strstr(emp,a)!=NULL){
@@ -206,7 +206,7 @@ void adminsignin(){
             //printf("%s %s %s %d",books[0].title,books[0].author,books[0].id,books[0].no);
             fileWriteBook("bookdata.txt",books,1);
             FILE *adminl = fopen("adminlog.txt","a");
-                time_t now = time(NULL);
+                time_t now = time(NULL);//using the time module to log the addition of book
                 struct tm *local = localtime(&now);
                 fprintf(adminl,"\n%02d-%02d-%04d %02d:%02d:%02d : Book ID: %s, Title: %s has been added by admin!\n",local->tm_mday, local->tm_mon + 1, local->tm_year + 1900,
            local->tm_hour, local->tm_min, local->tm_sec,books[0].id,books[0].title);
@@ -223,7 +223,7 @@ void adminsignin(){
             printf("\nIf the field is not known in any of the following entries, enter '-' instead.\n");
             printf("Enter Title: ");
             fgets(p, sizeof(p), stdin);
-            p[strcspn(p, "\n")] = 0;  // Remove newline character
+            p[strcspn(p, "\n")] = 0;  //this method is used to avoid scanf ending the string at the first whitespace
             q = strdup(p);
 
             printf("Enter Author: ");
@@ -237,7 +237,7 @@ void adminsignin(){
             b = strdup(d);
 
             for (int i=0; i < strlen(p); ++i) {
-                q[i] = tolower(p[i]);
+                q[i] = tolower(p[i]);//converting input to lowercase
             }
             for (int i=0; i < strlen(c); ++i) {
                 a[i] = tolower(c[i]);
@@ -326,9 +326,9 @@ void signin(){
 
         while(fread(&userpass, sizeof(USER), 1, fptr) && c==0) 
         {
-            decrypt(userpass.password,0xFACA);
+            decrypt(userpass.password,0xFACA);//decrypt the password that we just read
             //printf("%s %s %s %s \n",user, pass, userpass.username,userpass.password);
-            if (strcmp(user,userpass.username)==0 && strcmp(pass,userpass.password)==0){
+            if (strcmp(user,userpass.username)==0 && strcmp(pass,userpass.password)==0){//checking match
                 printf("\nHello user %s! Welcome to the Library.\n",userpass.username);
                 c=c+1;
                 //printf("%d",c);
@@ -342,8 +342,8 @@ void signin(){
         }
 
     }
-    int k;
-    int runchoice = 1;
+    int k;//variable to store userchoice
+    int runchoice = 1;//variable to keep program running/stop running program, via a whileloop
 
     while (runchoice==1){
         printf("\nWhat would you like to do today?\n Enter 1 to issue a new book.\n Enter 2 to view issued books, with due dates.\n Enter 3 to return a book.\n Enter 4 to speak to the Library Chatbot, Libby!\n Enter 5 to quit.\n");
@@ -353,13 +353,13 @@ void signin(){
             char *filename1 = "bookdata.txt";
         char p[256], c[256], d[256];
         char *q, *a, *b;
-        int seag=1;
+        int seag=1;//variable to use while loop with and keep search running until user terminates 
         while (seag==1){
         fflush(stdin);
         printf("\nIf the field is not known in any of the following entries, enter '-' instead.\n");
         printf("Enter Title: ");
         fgets(p, sizeof(p), stdin);
-        p[strcspn(p, "\n")] = 0;  // Remove newline character
+        p[strcspn(p, "\n")] = 0;  //this method is used to avoid scanf ending the string at the first whitespace
         q = strdup(p);
 
         printf("Enter Author: ");
@@ -373,7 +373,7 @@ void signin(){
         b = strdup(d);
 
         for (int i=0; i < strlen(p); ++i) {
-            q[i] = tolower(p[i]);
+            q[i] = tolower(p[i]);//converting to lowercase
         }
         for (int i=0; i < strlen(c); ++i) {
             a[i] = tolower(c[i]);
@@ -390,7 +390,7 @@ void signin(){
         printf("\n");
         char *emp="  -  ";
         if (strstr(emp,q)!=NULL){
-            strcpy(q,"");
+            strcpy(q,"");//setting to null if user doesn't know the field
         }
         if (strstr(emp,a)!=NULL){
             strcpy(a,"");
@@ -416,7 +416,7 @@ void signin(){
         sprintf(filename, "%s", user);
         //printf("%s %s",filename,be);
         fileIssue(filename,be);
-        fflush(stdin);
+        fflush(stdin);//clearing standard input file
         }
         break;
 
@@ -513,7 +513,7 @@ void faculty(char* facuser){
             printf("\nIf the field is not known in any of the following entries, enter '-' instead.\n");
             printf("Enter Title: ");
             fgets(p, sizeof(p), stdin);
-            p[strcspn(p, "\n")] = 0;  // Remove newline character
+            p[strcspn(p, "\n")] = 0;  //this method is used to avoid scanf ending the string at the first whitespace
             q = strdup(p);
 
             printf("Enter Author: ");
@@ -527,7 +527,7 @@ void faculty(char* facuser){
             b = strdup(d);
 
             for (int i=0; i < strlen(p); ++i) {
-                q[i] = tolower(p[i]);
+                q[i] = tolower(p[i]);//converting to lowercase
             }
             for (int i=0; i < strlen(c); ++i) {
                 a[i] = tolower(c[i]);
@@ -544,7 +544,7 @@ void faculty(char* facuser){
             printf("\n");
             char *emp="  -  ";
             if (strstr(emp,q)!=NULL){
-                strcpy(q,"");
+                strcpy(q,"");//setting to null if user doesn't know the field
             }
             if (strstr(emp,a)!=NULL){
                 strcpy(a,"");
@@ -723,7 +723,7 @@ void main(){
                     printf("Enter Password: ");
                     scanf("%s",&pass);
                     //printf("%s \n",pass)
-                    if ((strcmp(user,"kripa")==0 && strcmp(pass,"hello")==0) || (strcmp(user,"laal")==0 && strcmp(pass,"beast")==0) || (strcmp(user,"koushikd")==0 && strcmp(pass,"appreciate")==0)){
+                    if ((strcmp(user,"kripa")==0 && strcmp(pass,"bandhu")==0)){
                         faculty(user);
                         strcpy(q,"lol");
                         facchk+=1;

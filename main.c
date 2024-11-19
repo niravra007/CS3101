@@ -49,7 +49,7 @@ void regis() {
 
     do {
         printf("--------------------------------------REGISTERING--------------------------------------");
-        printf("Enter a username: ");
+        printf("\nEnter a username: ");
         scanf("%s", new_user.username);
         
         // Check if the username already exists
@@ -681,7 +681,7 @@ void main(){
         }
         else{
             int checkad=1;
-            printf("\nTo login as a Student User, type 1.\nTo login as a Faculty User, type 2: ");
+            printf("To register as a new user, type 0.\nTo login as a Student User, type 1.\nTo login as a Faculty User, type 2: ");
             scanf("%d",&checkad);
             // if(checkad==0){
             //     int flip=0;
@@ -705,6 +705,11 @@ void main(){
 
             // }
             if(checkad==1){
+                signin();
+                strcpy(q,"lol");
+            }
+            else if (checkad==0){
+                regis();
                 signin();
                 strcpy(q,"lol");
             }

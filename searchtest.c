@@ -493,7 +493,7 @@ void fileFacultyIssue(const char *username, char *bookID) {
     while (fread(&book, sizeof(BOOK), 1, bookDB)) {
         if (strstr(book.id,bookID)!=NULL) {
             found = 1;
-            if (book.no >= 0) {
+            if (book.no > 0) {
                 book.no -= 1; // Decrease stock by 1
                 fseek(bookDB, -sizeof(BOOK), SEEK_CUR); // Move back to update the current record
                 fwrite(&book, sizeof(BOOK), 1, bookDB); // Write the updated book data
@@ -532,7 +532,7 @@ void fileFacultyIssue(const char *username, char *bookID) {
     strcpy(bookuser[0].author,book.author);
     // Calculate due date based on stock
     time_t now = time(NULL);
-    int days_to_issue = (book.no + 1) * 7; // Calculate days to issue book for
+    int days_to_issue = (book.no + 3) * 7; // Calculate days to issue book for
     now += days_to_issue * 24 * 60 * 60;  // Add the days in seconds
 
     struct tm due_date = *localtime(&now);

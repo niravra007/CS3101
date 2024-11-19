@@ -11,18 +11,18 @@ typedef struct {
 } FAQ;
 
 FAQ faq_list[max_res] = {
-    {{"return", "give back", "reissue", "return book", "returning"}, "To return a book, log in as a user and select 'Return Book' from the menu. \n"},
-    {{"search", "find", "lookup", "locate", "look for"}, "Use the 'Search Book' feature to find books by title, author, or ID. \n"},
-    {{"admin", "administrator", "librarian", "manager", "admin tasks"}, "Admins can add, update, or delete book records through the admin menu. \n"},
-    {{"lost", "missing", "misplaced", "cannot find", "lose"}, "Please contact the library admin immediately if you have lost a book. \n"},
-    {{"overdue", "late", "delay", "due date", "penalty"}, "Overdue books must be returned as soon as possible to avoid penalties. \n"},
-    {{"max", "maximum", "limit", "book count", "how many books"}, "You can borrow up to 5 books at a time. Faculty may have special privileges. \n"},
-    {{"copies", "availability", "stock", "number", "books available"}, "Books with less than 3 copies are prioritized for faculty members.\n \n"},
-    {{"duration", "time", "period", "borrow time", "how many days","days"}, "The borrowing period depends on availability. More copies mean a longer duration. \n"},
-    {{"password", "reset", "forgot password", "change password", "login issue"}, "To reset your password, contact the library admin. \n"},
-    {{"borrow", "lend", "issue", "take book", "get book"}, "To borrow a book, log in as a user and select 'Borrow Book' from the menu.\n"},
-    {{"reissue"}, "We do not have a system for reissuing books. However you can borrow it again after returning.\n " },
-    {{"hello", "hi"},"Hi! Hope you're having a nice day.How may I help you today? \n "}
+    {{"returning books","return", "give back", "return book", "returning"}, "To return a book, log in as a user and select 'Return Book' from the menu. \n"},
+    {{"search for a book","search", "find", "lookup", "locate", "look for"}, "Use the 'Search Book' feature to find books by title, author, or ID. \n"},
+    {{"admin privileges", "administrator", "librarian", "manager", "admin tasks"}, "Admins can add, update, or delete book records through the admin menu. \n"},
+    {{"missing book","lost", "missing", "misplaced", "cannot find", "lose"}, "Please contact the library admin immediately if you have lost a book. \n"},
+    {{"overdue books","overdue", "late", "delay", "due date", "penalty"}, "Overdue books must be returned as soon as possible to avoid penalties. Please sign in to check if your book is overdue \n"},
+    {{"maximum books that can be borrowed","max", "maximum", "limit", "book count", "how many books","copies", "availability", "stock", "books available"}, "You can borrow up to 5 books at a time. Faculty may have special privileges.Books with less than 3 copies are prioritized for faculty members. \n"},
+    {{"Issue duration","duration", "time", "period", "borrow time", "how many days","days"}, "The borrowing period depends on availability. More copies mean a longer duration. \n"},
+    {{"resetting password","password", "reset", "forgot password", "change password", "login issue"}, "To reset your password, contact the library admin. \n"},
+    {{"issuing a book","borrow", "lend", "issue", "take book", "get book"}, "To borrow a book, log in as a user and select 'Borrow Book' from the menu.\n"},
+    {{"hello", "hi","hey"},"Hi! Hope you're having a nice day.How may I help you today? \n "},
+    {{"bye"}, "goodbye!"},
+    {{"thanks", "thank you"},"Glad I could be of help! Is there anything else I can assist you with?"}
 };
 
 void to_lowercase(char *str) 
@@ -52,12 +52,19 @@ void chatbot(char *input)
             }
         }
 
-    if (!match_found) {  // Correctly handle unmatched input
-        printf("Libby: I'm sorry, I couldn't find any relevant information. Could you be more specific? \n \n");
+    if (!match_found) {
+    printf("Libby: I'm sorry, I couldn't find any relevant information. Here are some common topics you can ask about:\n");
+    for (int i = 0; i < max_res-10; i++) {
+        if (faq_list[i].keywords[0][0] != '\0') {
+            printf("- %s\n", faq_list[i].keywords[0]);
+        }
     }
+    printf("\n");
+}
 }
 
-int libby(){
+int libby()
+{
     char input[255];
     printf("\n--------------------------------------------------------------------------------------\n");
     printf("\nWelcome to the Library Chatbot, Libby!\n");

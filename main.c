@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <time.h>
 #include "searchtest.h"
+#include "Chatbot.h"
 
 
 char user[20];
@@ -47,6 +48,7 @@ void regis() {
     int username_taken;
 
     do {
+        printf("--------------------------------------REGISTERING--------------------------------------");
         printf("Enter a username: ");
         scanf("%s", new_user.username);
         
@@ -314,6 +316,7 @@ void signin(){
     int c=0;
 
     while(c==0){
+        printf("\n--------------------------------------SIGNING IN--------------------------------------\n");
         printf("Enter Username: ");
         scanf("%s",&user);
         //printf("%s \n",user);
@@ -343,11 +346,11 @@ void signin(){
     int runchoice = 1;
 
     while (runchoice==1){
-        printf("\nWhat would you like to do today?\n Enter 1 to issue a new book.\n Enter 2 to view issued books, with due dates.\n Enter 3 to return a book.\n Enter 4 to quit.\n");
+        printf("\nWhat would you like to do today?\n Enter 1 to issue a new book.\n Enter 2 to view issued books, with due dates.\n Enter 3 to return a book.\n Enter 4 to speak to the Library Chatbot, Libby!\n Enter 5 to quit.\n");
     scanf("%d",&k);
-
-    if (k==1){
-        char *filename1 = "bookdata.txt";
+    switch(k){
+        case 1: {
+            char *filename1 = "bookdata.txt";
         char p[256], c[256], d[256];
         char *q, *a, *b;
         int seag=1;
@@ -414,77 +417,90 @@ void signin(){
         //printf("%s %s",filename,be);
         fileIssue(filename,be);
         fflush(stdin);
-    }
-    else if(k==2){
-        char filename[256];
-        sprintf(filename, "%s.txt", user);
-        fileReadUser(filename);
-        fflush(stdin);
-    }
-    else if(k==3){
-        char filename[256];
-        sprintf(filename, "%s.txt", user);
-        fileReadUser(filename);
-        fflush(stdin);
-        printf("Which book would you like to return? Please enter the ID: ");
-        char de[256];
-        char *be;
-        char *ke="";
-        fgets(de, sizeof(de), stdin);
-        de[strcspn(de, "\n")] = 0;
-        be = strdup(de);
+        }
+        break;
 
-        userDeleteEntry(filename,be);
-        FILE *bookDB = fopen("bookdata.txt", "r+b");
-if (bookDB == NULL) {
-    printf("Error opening file!\n");
-    exit(1);
-}
+        case 2: {
+            char filename[256];
+            sprintf(filename, "%s.txt", user);
+            fileReadUser(filename);
+            fflush(stdin);
+        }
+        break;
 
-    BOOK book;
-    int found = 0;
+        case 3: {
+            char filename[256];
+            sprintf(filename, "%s.txt", user);
+            fileReadUser(filename);
+            fflush(stdin);
+            printf("Which book would you like to return? Please enter the ID: ");
+            char de[256];
+            char *be;
+            char *ke="";
+            fgets(de, sizeof(de), stdin);
+            de[strcspn(de, "\n")] = 0;
+            be = strdup(de);
 
-    while (fread(&book, sizeof(BOOK), 1, bookDB) == 1) {
-    // Check if the book ID matches
-    if (strcmp(book.id, be) == 0) { // Assuming `book.id` and `be` are strings
-    //printf("Before Update: ID=%s, Stock=%d\n", book.id, book.no);
+            userDeleteEntry(filename,be);
+            FILE *bookDB = fopen("bookdata.txt", "r+b");
+            if (bookDB == NULL) {
+                printf("Error opening file!\n");
+                exit(1);
+            }
 
-    // Update stock
-    book.no += 1;
-    fseek(bookDB, -sizeof(BOOK), SEEK_CUR);
+                BOOK book;
+                int found = 0;
 
-    if (fwrite(&book, sizeof(BOOK), 1, bookDB) != 1) {
-    printf("Error writing updated record!\n");
-    }       
+                while (fread(&book, sizeof(BOOK), 1, bookDB) == 1) {
+                // Check if the book ID matches
+                if (strcmp(book.id, be) == 0) { // Assuming `book.id` and `be` are strings
+                //printf("Before Update: ID=%s, Stock=%d\n", book.id, book.no);
 
-    found = 1;
-    break;
-    }
-    }
+                // Update stock
+                book.no += 1;
+                fseek(bookDB, -sizeof(BOOK), SEEK_CUR);
 
-    if (!found) {
-    printf("Book ID not found in the database.\n");
-    }
+                if (fwrite(&book, sizeof(BOOK), 1, bookDB) != 1) {
+                printf("Error writing updated record!\n");
+                }       
 
-    fclose(bookDB);
-    }
-    else if(k==4){
-        runchoice -=1; 
-    }
-    else{
+                found = 1;
+                break;
+            }
+            }
+
+            if (!found) {
+            printf("Book ID not found in the database.\n");
+            }
+
+            fclose(bookDB);
+        }
+        break;
+
+        case 4: fflush(stdin);
+                libby();
+                break;
+
+        case 5: runchoice -=1; 
+                break;
         
+        default:
+            break;
+
+
     }
     }
     
 }
 
 void faculty(char* facuser){
-   printf("\nHello faculty user %s! Welcome to the Library.\n",facuser); 
+    printf("--------------------------------------------------------------------------------------");
+    printf("\nHello faculty user %s! Welcome to the Library.\n",facuser); 
     int k;
     int runchoice = 1;
 
     while (runchoice==1){
-        printf("\nWhat would you like to do today?\n Enter 1 to issue a new book.\n Enter 2 to view issued books, with due dates.\n Enter 3 to return a book.\n Enter 4 to quit.\n");
+        printf("\nWhat would you like to do today?\n Enter 1 to issue a new book.\n Enter 2 to view issued books, with due dates.\n Enter 3 to return a book.\n Enter 4 to speak to the Library Chatbot, Libby!\n Enter 5 to quit.\n");
         scanf("%d",&k);
 
         if (k==1){
@@ -610,6 +626,10 @@ void faculty(char* facuser){
             fclose(bookDB);
         }
         else if(k==4){
+            fflush(stdin);
+            libby();
+        }
+        else if(k==5){
             runchoice -=1; 
         }
         else{
@@ -620,67 +640,96 @@ void faculty(char* facuser){
 }
 
 void main(){
-    char c[10];
-    char *q;
-    while ((strcmp(q,"y")!=0) && (strcmp(q,"n")!=0)){
-        printf("Are you a new user? (Y/N): ");
-        gets(c);
-        q = strdup(c);
-        for (int i=0; i < strlen(c); ++i) {
-            q[i] = tolower(c[i]);
+    int wholeprog=0;
+    while (wholeprog==0){
+        char c[10];
+        char *q;
+        fflush(stdin);
+        while ((strcmp(q,"y")!=0) && (strcmp(q,"n")!=0) && (strcmp(q,"e")!=0)){
+            printf("Are you admin? (Y/N)\nTo exit, type E: ");
+            gets(c);
+            q = strdup(c);
+            for (int i=0; i < strlen(c); ++i) {
+                q[i] = tolower(c[i]);
+            }
+            //printf("%s",c);
         }
-        //printf("%s",c);
+        
+        if (strcmp(q,"y")==0){
+                int flip=0;
+                char adpass[50];
+                char adminpass[50] = "haringhataITcell";
+                while(flip==0){
+                    printf("\n--------------------------------------SIGNING IN--------------------------------------\n");
+                    printf("\nEnter Password: ");
+                    scanf("%s",&adpass);
+                    //printf("%s %s\n",adminpass,adpass);
+                    if(strcmp(adpass,adminpass)==0){
+                        printf("\n--------------------------------------------------------------------------------------\n");
+                        printf("\nWelcome administrator!\n");
+                        flip+=1;
+                        adminsignin();
+                        strcpy(q,"lol");
+                    }
+                    else{
+                        printf("Incorrect Password! Please try again.\n");
+                    }
+                }
+        }
+        else if(strcmp(q,"e")==0){
+            wholeprog+=1;
+        }
+        else{
+            int checkad=1;
+            printf("\nTo login as a Student User, type 1.\nTo login as a Faculty User, type 2: ");
+            scanf("%d",&checkad);
+            // if(checkad==0){
+            //     int flip=0;
+            //     char adpass[50];
+            //     char adminpass[50] = "haringhataITcell";
+            //     while(flip==0){
+            //         printf("\n--------------------------------------SIGNING IN--------------------------------------\n");
+            //         printf("\nEnter Password: ");
+            //         scanf("%s",&adpass);
+            //         //printf("%s %s\n",adminpass,adpass);
+            //         if(strcmp(adpass,adminpass)==0){
+            //             printf("\nWelcome administrator!\n");
+            //             flip+=1;
+            //             adminsignin();
+            //         }
+            //         else{
+            //             printf("Incorrect Password! Please try again.\n");
+            //         }
+            //     }
+                
+
+            // }
+            if(checkad==1){
+                signin();
+                strcpy(q,"lol");
+            }
+            else if(checkad==2){
+                int facchk=0;
+                while (facchk==0){
+                    printf("\n--------------------------------------SIGNING IN--------------------------------------\n");
+                    printf("Enter Username: ");
+                    scanf("%s",&user);
+                    //printf("%s \n",user);
+                    printf("Enter Password: ");
+                    scanf("%s",&pass);
+                    //printf("%s \n",pass)
+                    if ((strcmp(user,"kripa")==0 && strcmp(pass,"hello")==0) || (strcmp(user,"laal")==0 && strcmp(pass,"beast")==0) || (strcmp(user,"koushikd")==0 && strcmp(pass,"appreciate")==0)){
+                        faculty(user);
+                        strcpy(q,"lol");
+                        facchk+=1;
+                    }
+                    else{
+                        printf("\nPlease recheck credentials!\n");
+                    }
+                }
+            }
+        }
     }
     
-    if (strcmp(q,"y")==0){
-        regis();
-        signin();
-    }
-    else{
-        int checkad=1;
-        printf("Type 0 to login as admininstrator.\nTo login as a Student User, type 1.\nTo login as a Faculty User, type 2: ");
-        scanf("%d",&checkad);
-        if(checkad==0){
-            int flip=0;
-            char adpass[50];
-            char adminpass[50] = "haringhataITcell";
-            while(flip==0){
-                printf("\nEnter Password: ");
-                scanf("%s",&adpass);
-                //printf("%s %s\n",adminpass,adpass);
-                if(strcmp(adpass,adminpass)==0){
-                    printf("\nWelcome administrator!\n");
-                    flip+=1;
-                    adminsignin();
-                }
-                else{
-                    printf("Incorrect Password! Please try again.\n");
-                }
-            }
-            
-
-        }
-        else if(checkad==1){
-            signin();
-        }
-        else if(checkad==2){
-            int facchk=0;
-            while (facchk==0){
-                printf("Enter Username: ");
-                scanf("%s",&user);
-                //printf("%s \n",user);
-                printf("Enter Password: ");
-                scanf("%s",&pass);
-                //printf("%s \n",pass)
-                if ((strcmp(user,"kripa")==0 && strcmp(pass,"hello")==0) || (strcmp(user,"somnath")==0 && strcmp(pass,"topos")==0)){
-                    faculty(user);
-                    facchk+=1;
-                }
-                else{
-                    printf("\nPlease recheck credentials!\n");
-                }
-            }
-        }
-    }
 }
 
